@@ -1,13 +1,15 @@
 apply plugin: 'com.android.library'
-apply plugin: 'bintray-release'
+// apply plugin: 'bintray-release'
+
+apply from: ('https://raw.githubusercontent.com/yunarta/works-gradle-script/master/auto-configure.gradle')
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion autoCompileSdkVersion(23)
+    buildToolsVersion autoBuildToolsVersion('23.0.1')
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 23
+        targetSdkVersion autoCompileSdkVersion(23)
         versionCode 1
         versionName "1.0"
     }
@@ -23,16 +25,17 @@ buildscript {
     repositories {
         jcenter()
     }
-    dependencies {
-        classpath 'com.novoda:bintray-release:0.3.4'
-    }
+
+//    dependencies {
+//        classpath 'com.novoda:bintray-release:0.3.4'
+//    }
 }
 
-publish {
-    userOrg = 'erz05'
-    groupId = 'com.github.erz05'
-    artifactId = 'TimePicker'
-    version = '0.1.4'
-    description = 'Android Library for TimePicker View'
-    website = 'https://github.com/erz05/TimePicker'
-}
+//publish {
+//    userOrg = 'erz05'
+//    groupId = 'com.github.erz05'
+//    artifactId = 'TimePicker'
+//    version = '0.1.4'
+//    description = 'Android Library for TimePicker View'
+//    website = 'https://github.com/erz05/TimePicker'
+//}

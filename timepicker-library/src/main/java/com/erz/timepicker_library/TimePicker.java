@@ -34,13 +34,14 @@ import java.util.Date;
 /**
  * Created by edgarramirez on 2/26/15.
  */
-public class TimePicker extends View {
+public class TimePicker extends View
+{
 
-    private static final String STATE_PARENT = "parent";
-    private static final String STATE_ANGLE = "angle";
-    private static final String STATE_TEXT_COLOR = "textColor";
-    private static final String STATE_CLOCK_COLOR = "clockColor";
-    private static final String STATE_DIAL_COLOR = "dialColor";
+    private static final String STATE_PARENT        = "parent";
+    private static final String STATE_ANGLE         = "angle";
+    private static final String STATE_TEXT_COLOR    = "textColor";
+    private static final String STATE_CLOCK_COLOR   = "clockColor";
+    private static final String STATE_DIAL_COLOR    = "dialColor";
     private static final String STATE_DISABLE_TOUCH = "disableTouch";
 
     Paint paint;
@@ -59,16 +60,16 @@ public class TimePicker extends View {
     float posY;
     float dialX;
     float dialY;
-    final static float secAngle = 360/12;
+    final static float secAngle = 360 / 12;
 
     int startAngle;
     int hour;
     int minutes;
     int tmp;
     int previousHour;
-    int textColor = Color.BLACK;
+    int textColor  = Color.BLACK;
     int clockColor = Color.BLACK;
-    int dialColor = Color.BLACK;
+    int dialColor  = Color.BLACK;
 
     double angle;
     double degrees;
@@ -84,23 +85,30 @@ public class TimePicker extends View {
 
     OnTimeChangedListener timeChangedListener;
     Calendar calendar = Calendar.getInstance();
+    private float mOffset;
+    private float mAmPmOffset;
+    private float mVerticalOffset;
 
-    public interface OnTimeChangedListener {
+    public interface OnTimeChangedListener
+    {
         void timeChanged(Date date);
     }
 
-    public TimePicker(Context context) {
+    public TimePicker(Context context)
+    {
         super(context);
         init(context, null);
     }
 
-    public TimePicker(Context context, AttributeSet attrs) {
+    public TimePicker(Context context, AttributeSet attrs)
+    {
         super(context, attrs);
         init(context, attrs);
     }
 
-    private void init(Context context, AttributeSet attrs) {
-        angle = (-Math.PI / 2)+.001;
+    private void init(Context context, AttributeSet attrs)
+    {
+        angle = (-Math.PI / 2) + .001;
 
         paint = new Paint();
         paint.setAntiAlias(true);
@@ -109,9 +117,11 @@ public class TimePicker extends View {
 
         rectF = new RectF();
 
-        if (attrs != null) {
+        if (attrs != null)
+        {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TimePicker);
-            if (typedArray != null) {
+            if (typedArray != null)
+            {
                 textColor = typedArray.getColor(R.styleable.TimePicker_text_color, Color.BLACK);
                 clockColor = typedArray.getColor(R.styleable.TimePicker_clock_color, Color.BLACK);
                 dialColor = typedArray.getColor(R.styleable.TimePicker_dial_color, Color.BLACK);
@@ -119,25 +129,31 @@ public class TimePicker extends View {
                 typedArray.recycle();
             }
         }
+
+        mOffset = getResources().getDimension(R.dimen.tpl_textOffset);
+        mAmPmOffset = getResources().getDimension(R.dimen.tpl_amPmOffset);
+        mVerticalOffset = getResources().getDimension(R.dimen.tpl_verticalOffset);
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+    {
         width = MeasureSpec.getSize(widthMeasureSpec);
         height = MeasureSpec.getSize(heightMeasureSpec);
 
         min = Math.min(width, height);
-        setMeasuredDimension((int)min, (int)min);
+        setMeasuredDimension((int) min, (int) min);
 
         offset = min * 0.5f;
-        padding = min/20;
-        radius = min/2-(padding*2);
-        dialRadius = radius/5;
-        rectF.set(-radius,-radius,radius,radius);
+        padding = min / 20;
+        radius = min / 2 - (padding * 2);
+        dialRadius = radius / 5;
+        rectF.set(-radius, -radius, radius, radius);
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(Canvas canvas)
+    {
         canvas.translate(offset, offset);
 
         paint.setStrokeWidth(1);
@@ -146,15 +162,15 @@ public class TimePicker extends View {
 
         //Rad to Deg
         degrees = (Math.toDegrees(angle) + 90) % 360;
-        degrees = (degrees + 360)%360;
+        degrees = (degrees + 360) % 360;
 
         //get Hour
-        hour = ((int)degrees/30)%12;
+        hour = ((int) degrees / 30) % 12;
         if (hour == 0) hour = 12;
 
         //get Minutes
-        minutes = ((int)(degrees * 2))%60;
-        mStr = (minutes < 10) ? "0"+minutes : minutes+"";
+        minutes = ((int) (degrees * 2)) % 60;
+        mStr = (minutes < 10) ? "0" + minutes : minutes + "";
 
         //get AM/PM
         if ((hour == 12 && previousHour == 11) || (hour == 11 && previousHour == 12)) amPm = !amPm;
@@ -163,38 +179,50 @@ public class TimePicker extends View {
         previousHour = hour;
 
         paint.setColor(textColor);
-        paint.setTextSize(min/5);
-        if (twentyFour) {
+        paint.setTextSize(min / 6);
+        paint.setUnderlineText(false);
+
+        if (twentyFour)
+        {
             tmp = hour;
-            if (!amPm) {
+            if (!amPm)
+            {
                 if (tmp < 12) tmp += 12;
-            } else {
+            }
+            else
+            {
                 if (tmp == 12) tmp = 0;
             }
-            hStr = (tmp < 10) ? "0"+tmp : tmp+"";
-            canvas.drawText(hStr + ":" + mStr, 0, paint.getTextSize()/3, paint);
-        } else {
-            hStr = (hour < 10) ? "0"+hour : hour+"";
-            canvas.drawText(hStr + ":" + mStr, 0, paint.getTextSize() / 4, paint);
+            hStr = (tmp < 10) ? "0" + tmp : tmp + "";
+            canvas.drawText(hStr + ":" + mStr, 0, paint.getTextSize() / 3, paint);
+        }
+        else
+        {
+            hStr = (hour < 10) ? "0" + hour : hour + "";
+
+            canvas.drawText(hStr + ":" + mStr, -mOffset, paint.getTextSize() + mVerticalOffset, paint);
+
             paint.setTextSize(min / 10);
-            canvas.drawText(amPmStr, 0, paint.getTextSize() * 2, paint);
+            paint.setUnderlineText(true);
+            canvas.drawText(amPmStr, 3 * mOffset, paint.getTextSize() + mAmPmOffset + mVerticalOffset, paint);
         }
 
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(min/30);
+        paint.setStrokeWidth(min / 30);
         paint.setColor(clockColor);
         canvas.drawOval(rectF, paint);
 
-        startAngle = 0;
-        for (tmp=0; tmp<12; tmp++) {
-            canvas.save();
-            canvas.rotate(startAngle, 0, 0);
-            canvas.drawLine(0, radius, 0, radius - padding, paint);
-            canvas.restore();
-            startAngle += secAngle;
-        }
+//        startAngle = 0;
+//        for (tmp=0; tmp<12; tmp++) {
+//            canvas.save();
+//            canvas.rotate(startAngle, 0, 0);
+//            canvas.drawLine(0, radius, 0, radius - padding, paint);
+//            canvas.restore();
+//            startAngle += secAngle;
+//        }
 
-        if (!disableTouch) {
+        if (!disableTouch)
+        {
             paint.setStyle(Paint.Style.FILL);
             paint.setColor(dialColor);
             paint.setAlpha(100);
@@ -205,36 +233,45 @@ public class TimePicker extends View {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event)
+    {
         if (event == null || disableTouch) return false;
         getParent().requestDisallowInterceptTouchEvent(true);
 
         posX = event.getX() - offset;
         posY = event.getY() - offset;
 
-        switch (event.getAction()) {
+        switch (event.getAction())
+        {
             case MotionEvent.ACTION_DOWN:
                 calculatePointerPosition(angle);
                 if (posX >= (dialX - dialRadius) && posX <= (dialX + dialRadius)
-                        && posY >= (dialY - dialRadius) && posY <= (dialY + dialRadius)) {
+                        && posY >= (dialY - dialRadius) && posY <= (dialY + dialRadius))
+                {
 
                     slopX = posX - dialX;
                     slopY = posY - dialY;
                     isMoving = true;
                     invalidate();
-                } else {
+                }
+                else
+                {
                     getParent().requestDisallowInterceptTouchEvent(false);
                     return false;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (isMoving) {
+                if (isMoving)
+                {
                     angle = (float) Math.atan2(posY - slopY, posX - slopX);
-                    if (timeChangedListener != null) {
+                    if (timeChangedListener != null)
+                    {
                         timeChangedListener.timeChanged(getTime());
                     }
                     invalidate();
-                } else {
+                }
+                else
+                {
                     getParent().requestDisallowInterceptTouchEvent(false);
                     return false;
                 }
@@ -248,15 +285,17 @@ public class TimePicker extends View {
         return true;
     }
 
-    private void calculatePointerPosition(double angle) {
+    private void calculatePointerPosition(double angle)
+    {
         dialX = (float) (radius * Math.cos(angle));
         dialY = (float) (radius * Math.sin(angle));
     }
 
     @Override
-    protected Parcelable onSaveInstanceState() {
+    protected Parcelable onSaveInstanceState()
+    {
         Parcelable superState = super.onSaveInstanceState();
-        Bundle state = new Bundle();
+        Bundle     state      = new Bundle();
 
         state.putParcelable(STATE_PARENT, superState);
         state.putDouble(STATE_ANGLE, angle);
@@ -269,8 +308,9 @@ public class TimePicker extends View {
     }
 
     @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        Bundle savedState = (Bundle) state;
+    protected void onRestoreInstanceState(Parcelable state)
+    {
+        Bundle     savedState = (Bundle) state;
         Parcelable superState = savedState.getParcelable(STATE_PARENT);
         super.onRestoreInstanceState(superState);
 
@@ -281,42 +321,52 @@ public class TimePicker extends View {
         disableTouch = savedState.getBoolean(STATE_DISABLE_TOUCH);
     }
 
-    public void setColor(int color) {
+    public void setColor(int color)
+    {
         this.textColor = color;
         this.clockColor = color;
         this.dialColor = color;
         invalidate();
     }
 
-    public void setTextColor(int textColor) {
+    public void setTextColor(int textColor)
+    {
         this.textColor = textColor;
         invalidate();
     }
 
-    public void setClockColor(int clockColor) {
+    public void setClockColor(int clockColor)
+    {
         this.clockColor = clockColor;
         invalidate();
     }
 
-    public void setDialColor(int dialColor) {
+    public void setDialColor(int dialColor)
+    {
         this.dialColor = dialColor;
         invalidate();
     }
 
-    public void enableTwentyFourHour(boolean twentyFour) {
+    public void enableTwentyFourHour(boolean twentyFour)
+    {
         this.twentyFour = twentyFour;
         invalidate();
     }
 
-    public void disableTouch(boolean disableTouch){
+    public void disableTouch(boolean disableTouch)
+    {
         this.disableTouch = disableTouch;
     }
 
-    public Date getTime() {
+    public Date getTime()
+    {
         tmp = hour;
-        if (!amPm) {
+        if (!amPm)
+        {
             if (tmp < 12) tmp += 12;
-        } else {
+        }
+        else
+        {
             if (tmp == 12) tmp = 0;
         }
 
@@ -325,19 +375,21 @@ public class TimePicker extends View {
         return calendar.getTime();
     }
 
-    public void setTime(Date date) {
+    public void setTime(Date date)
+    {
         calendar.setTime(date);
         hour = calendar.get(Calendar.HOUR);
         minutes = calendar.get(Calendar.MINUTE);
         amPm = (calendar.get(Calendar.AM_PM) == Calendar.AM);
-        degrees = ((hour * 30)+270)%360;
+        degrees = ((hour * 30) + 270) % 360;
         angle = Math.toRadians(degrees);
-        degrees = ((double)minutes/2);
-        angle += Math.toRadians(degrees)+.001;
+        degrees = ((double) minutes / 2);
+        angle += Math.toRadians(degrees) + .001;
         invalidate();
     }
 
-    public void setTimeChangedListener(OnTimeChangedListener timeChangedListener) {
+    public void setTimeChangedListener(OnTimeChangedListener timeChangedListener)
+    {
         this.timeChangedListener = timeChangedListener;
     }
 }
